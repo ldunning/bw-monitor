@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# sparkfun keys
+keys.txt
+
+# Google client keys
+client_secret.json
