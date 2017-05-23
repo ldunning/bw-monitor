@@ -21,9 +21,10 @@ SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 
 
 class GoogleSheetsWrapper:
-    def __init__(self, secrets, flags):
+    def __init__(self, secrets, oauth, flags):
         self.secrets = secrets
         self.flags = flags
+        self.oauth = oauth
         
         self.creds = self.get_credentials()
         self.service = self.get_service()
@@ -37,13 +38,13 @@ class GoogleSheetsWrapper:
         Returns:
             Credentials, the obtained credential.
         """
-        home_dir = os.path.expanduser('~')
-        credential_dir = os.path.join(home_dir, '.credentials')
-        if not os.path.exists(credential_dir):
-            os.makedirs(credential_dir)
-        credential_path = os.path.join(credential_dir,
-                                       __file__ + '.json')
-    
+#        home_dir = os.path.expanduser('~')
+#        credential_dir = os.path.join(home_dir, '.credentials')
+#        if not os.path.exists(credential_dir):
+#            os.makedirs(credential_dir)
+#        credential_path = os.path.join(credential_dir,
+#                                       __file__ + '.json')
+        credential_path = self.oauth
         store = Storage(credential_path)
         credentials = store.get()
         if not credentials or credentials.invalid:
@@ -94,12 +95,14 @@ if __name__ == "__main__":
     argp.add_argument("--client_secret", type=str, 
                       default='client_secret.json', 
                       help="JSON file containing Google API keys")
+    argp.add_argument("--oauth_json", type=str,
+                      default=__file__ + ".json", help="file to save oauth keys in")
     argp.add_argument('--sheet_id', type=str, 
                       default='1IHM1fiR1v1l8flve0yOs_DPS5f20K5O88HC9wIFCTvA', 
                       help="Google Sheet ID")
     args = argp.parse_args()
      
-    g = GoogleSheetsWrapper(args.client_secret, args)
+    g = GoogleSheetsWrapper(args.client_secret, args.oauth_json, args)
     
     bw = get_bandwidth()
     values = [bw['timestamp'], bw['ping'], bw['upload'], bw['download']]
